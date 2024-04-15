@@ -40,3 +40,12 @@ $  MYSQL_ROOT_PASSWORD=rootpw MYSQL_PASSWORD=pw docker-compose up -d
 Docker image 
 
 Would like to use `php8.3-fpm-alpine` instead of `php8.3-apache`, but container wouldn't start properly.
+
+
+## Troubleshooting
+
+Use this command to view environment variables within Docker 
+
+```
+docker inspect --format '{{json .Config.Env}}' <container_name_or_id>
+```
