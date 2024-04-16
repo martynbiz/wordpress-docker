@@ -17,6 +17,23 @@ Start the container (without passing env variables, might use defaults.. not tes
 $ MYSQL_ROOT_PASSWORD=wordpress MYSQL_PASSWORD=wordpress docker-compose up -d
 ```
 
+## Build specification
+
+To extend the default images, there is the possiblity of adding a /build directory and putting Dockerfiles there:
+
+e.g. 
+
+/build/wordpress/Dockerfile
+
+Then amend the docker-compose file (remove image attribute):
+
+```
+wordpress:
+  build: ./build/wordpress
+```
+
+The build directory will be ignored by the repository (see .gitignore)
+
 ## Production 
 
 This is some additional things to run Wordpress on production server
@@ -49,3 +66,7 @@ Use this command to view environment variables within Docker
 ```
 docker inspect --format '{{json .Config.Env}}' <container_name_or_id>
 ```
+
+Issues with sending emails
+
+Wordpress does not send emials from docker containers without some modification to the docker build or via plugins. Currently looking into plugins such as WP Mail SMTP.

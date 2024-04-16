@@ -1,3 +1,6 @@
 /wp-content
 docker-compose.yml
 uploads.ini
+
+# this allows for a seperate folder that can contain additional "build" Dockerfiles
+/build
