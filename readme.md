@@ -70,3 +70,33 @@ docker inspect --format '{{json .Config.Env}}' <container_name_or_id>
 Issues with sending emails
 
 Wordpress does not send emials from docker containers without some modification to the docker build or via plugins. Currently looking into plugins such as WP Mail SMTP.
+
+
+The following process was used to change the database to a different environment/version:
+
+1) Take a backup of the website database using Updraft
+
+2) Stop and remove the existing database container only
+
+```
+$ docker stop <container_name>
+$ docker rm <container_name>
+$ docker volume rm <volume_name>
+```
+
+3) Update the version in the docker-compose.yml file:
+
+```
+services:
+  db:
+    image: mariadb:10.6.17
+    ...
+```
+
+4) Run the container to create the new database container:
+
+```
+$ docker-compose up -d
+```
+
+5) Restore the backup
