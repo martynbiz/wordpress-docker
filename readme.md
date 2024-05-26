@@ -70,3 +70,27 @@ docker inspect --format '{{json .Config.Env}}' <container_name_or_id>
 Issues with sending emails
 
 Wordpress does not send emials from docker containers without some modification to the docker build or via plugins. Currently looking into plugins such as WP Mail SMTP.
+
+
+Undefined constant PDO::MYSQL_ATTR_INIT_COMMAND
+
+Encountering this when using FG Joomla to WordPress plugin. 
+
+```
+$ docker-php-ext-install pdo pdo_mysql
+```
+
+
+
+
+
+
+nate access to shared updraft backup.. 
+nate access to spsc-dev site ssh
+deploy 
+wp-cli 
+limit blocks available to content editor 
+
+
+
+natakallum
