@@ -4,7 +4,7 @@ A starter Docker Compose setup for running WordPress with a MariaDB database.
 
 It runs two containers:
 
-- `wordpress` – WordPress 6.5 on PHP 8.3 with Apache, served on port 8000
+- `wordpress` – WordPress 7.1 on PHP 8.3 with Apache, served on port 8000 by default (set `WORDPRESS_PORT` to change it)
 - `db` – MariaDB 10.6, with data stored in the `db_data` Docker volume
 
 Themes, plugins and uploads live in `./wp-content` on the host, so they can be edited directly and survive container rebuilds. PHP upload limits are set in `uploads.ini`.
@@ -76,4 +76,4 @@ Do not use the default credentials on a server.
 
 The database credentials only take effect when the `db_data` volume is first created. To change them later, change them in MariaDB itself, or back up the site and recreate the volume.
 
-WordPress is served over plain HTTP on port 8000. For HTTPS, put a reverse proxy (e.g. Nginx, Caddy or Traefik) in front of it.
+WordPress is served over plain HTTP on `WORDPRESS_PORT` (8000 by default). For HTTPS, put a reverse proxy (e.g. Nginx, Caddy or Traefik) in front of it.
