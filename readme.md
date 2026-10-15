@@ -1,102 +1,79 @@
-# Wordpress Docker 
+# WordPress Docker
 
-This is a starter Docker container for Wordpress 
+A starter Docker Compose setup for running WordPress with a MariaDB database.
 
-## Getting started 
+It runs two containers:
 
-Copy the docker-compose and uploads ini files:
+- `wordpress` – WordPress 6.5 on PHP 8.3 with Apache, served on port 8000
+- `db` – MariaDB 10.6, with data stored in the `db_data` Docker volume
 
-```
-$ cp docker-compose.yml-example docker-compose.yml
-$ cp uploads.ini-example uploads.ini
-```
+Themes, plugins and uploads live in `./wp-content` on the host, so they can be edited directly and survive container rebuilds. PHP upload limits are set in `uploads.ini`.
 
-Start the container (without passing env variables, might use defaults.. not tested this)
+Database credentials are read from a `.env` file. Any variable that is not set falls back to the default of `wordpress` (the database host defaults to `db:3306`).
 
-```
-$ MYSQL_ROOT_PASSWORD=wordpress MYSQL_PASSWORD=wordpress docker-compose up -d
-```
+## Getting started
 
-## Build specification
+### Development
 
-To extend the default images, there is the possiblity of adding a /build directory and putting Dockerfiles there:
+1. Copy the PHP uploads config and the environment file:
 
-e.g. 
+   ```
+   $ cp uploads.ini-example uploads.ini
+   $ cp env.example .env
+   ```
 
-/build/wordpress/Dockerfile
+   The values in `env.example` match the defaults, so `.env` works for local development without changes.
 
-Then amend the docker-compose file (remove image attribute):
+2. Start the containers:
 
-```
-wordpress:
-  build: ./build/wordpress
-```
+   ```
+   $ docker compose up -d
+   ```
 
-The build directory will be ignored by the repository (see .gitignore)
+3. Open http://localhost:8000 and follow the WordPress installer.
 
-## Production 
-
-This is some additional things to run Wordpress on production server
-
-Environment variables
-
-Change docker-compose passwords to environment variables and pass in with `docker-compose up`:
-
-Update any docker-compose.yml environment variables with:
+To stop the containers:
 
 ```
-MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+$ docker compose down
 ```
 
-Run `docker-compose up` (space at front won't commit command to history)
+### Production
 
-```
-$  MYSQL_ROOT_PASSWORD=rootpw MYSQL_PASSWORD=pw docker-compose up -d
-```
+Do not use the default credentials on a server.
 
-Docker image 
+1. Copy the PHP uploads config and adjust the limits if needed:
 
-Would like to use `php8.3-fpm-alpine` instead of `php8.3-apache`, but container wouldn't start properly.
+   ```
+   $ cp uploads.ini-example uploads.ini
+   ```
 
+2. Create a `.env` file from the example:
 
-## Troubleshooting
+   ```
+   $ cp env.example .env
+   ```
 
-Use this command to view environment variables within Docker 
+   Then edit `.env` and replace every password with a strong, unique value. Do not keep the `wordpress` defaults.
 
-```
-docker inspect --format '{{json .Config.Env}}' <container_name_or_id>
-```
+   `MYSQL_USER`/`MYSQL_PASSWORD` and `WORDPRESS_DB_USER`/`WORDPRESS_DB_PASSWORD` must match. `.env` is ignored by git, so it will not be committed. Restrict who can read it:
 
-Issues with sending emails
+   ```
+   $ chmod 600 .env
+   ```
 
-Wordpress does not send emials from docker containers without some modification to the docker build or via plugins. Currently looking into plugins such as WP Mail SMTP.
+3. Start the containers:
 
+   ```
+   $ docker compose up -d
+   ```
 
-The following process was used to change the database to a different environment/version:
+4. Check that the containers are using the expected values:
 
-1) Take a backup of the website database using Updraft
+   ```
+   $ docker compose config
+   ```
 
-2) Stop and remove the existing database container only
+The database credentials only take effect when the `db_data` volume is first created. To change them later, change them in MariaDB itself, or back up the site and recreate the volume.
 
-```
-$ docker stop <container_name>
-$ docker rm <container_name>
-$ docker volume rm <volume_name>
-```
-
-3) Update the version in the docker-compose.yml file:
-
-```
-services:
-  db:
-    image: mariadb:10.6.17
-    ...
-```
-
-4) Run the container to create the new database container:
-
-```
-$ docker-compose up -d
-```
-
-5) Restore the backup
+WordPress is served over plain HTTP on port 8000. For HTTPS, put a reverse proxy (e.g. Nginx, Caddy or Traefik) in front of it.
