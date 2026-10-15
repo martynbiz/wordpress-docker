@@ -1,5 +1,5 @@
 *
-!.env.example
+!env.example
 !.gitignore
 !docker-compose.yml
 !uploads.ini-example
